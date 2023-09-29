@@ -1,7 +1,10 @@
-import { Formik, Field, Form } from 'formik';
 import { Component } from 'react';
 import { nanoid } from 'nanoid';
+
 import { ContactList } from './ContactList/ContactList';
+import { Filter } from './Filter/Filter';
+import { ContactForm } from './ContactForm/ContactForm';
+import { Layout } from './Layout/Layout.styled';
 
 export class App extends Component {
   state = {
@@ -11,8 +14,6 @@ export class App extends Component {
       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
-    name: '',
-    number: '',
     filter: '',
   };
 
@@ -22,8 +23,8 @@ export class App extends Component {
 
   deleteContact = contactId => {
     this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId)
-    }))
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
+    }));
   };
 
   getFilteredContacts = () => {
@@ -33,76 +34,32 @@ export class App extends Component {
     );
   };
 
+  addContact = (values) => {
+    const newContact = {
+      id: nanoid(),
+      name: values.name,
+      number: values.number,
+  }
+  this.setState(prevState => ({
+    contacts: [...prevState.contacts, newContact],
+  }));
+}
 
   render() {
     const { filter } = this.state;
     const filteredContacts = this.getFilteredContacts();
     return (
-      <div>
-        <div>
-          <h1>Phonebook</h1>
-          <Formik
-            initialValues={{
-              name: '',
-              number: '',
-            }}
-            onSubmit={values => {
-              const newContact = {
-                id: nanoid(),
-                name: values.name,
-                number: values.number,
-              };
-
-              const isDublicate = this.state.contacts.some(
-                contact =>
-                  contact.name.toLowerCase() === values.name.toLowerCase()
-              );
-
-              if (isDublicate) {
-                alert(
-                  'This name already exists. Please enter a different name.'
-                );
-                return;
-              }
-
-              this.setState(prevState => ({
-                contacts: [...prevState.contacts, newContact],
-              }));
-
-              values.name = '';
-              values.number = '';
-            }}
-          >
-            <Form>
-              <label htmlFor="Name">Name</label>
-              <Field
-                type="text"
-                name="name"
-                pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-                placeholder="type name"
-                title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-                required
-              />
-              <label htmlFor="Number">Number</label>
-              <Field
-                type="tel"
-                name="number"
-                pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-                title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-                required
-              />
-              <button type="submit">Add contact</button>
-            </Form>
-          </Formik>
-        </div>
+      <Layout>
+        <h1>Phonebook</h1>
+        <ContactForm contacts={this.state.contacts} addContact={this.addContact}/>
+        <h2>Contacts</h2>
+        <Filter value={filter} filterchange={this.filterchange} />
         <ContactList
           onDelete={this.deleteContact}
           contacts={this.state.contacts}
-          value={filter}
           filteredContacts={filteredContacts}
-          filterchange={this.filterchange}
         />
-      </div>
+      </Layout>
     );
   }
 }
