@@ -20,6 +20,12 @@ export class App extends Component {
     this.setState({ filter: e.target.value });
   };
 
+  deleteContact = contactId => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId)
+    }))
+  };
+
   getFilteredContacts = () => {
     const { contacts, filter } = this.state;
     return contacts.filter(contact =>
@@ -27,9 +33,10 @@ export class App extends Component {
     );
   };
 
+
   render() {
-    const {filter} = this.state
-    const filteredContacts = this.getFilteredContacts()
+    const { filter } = this.state;
+    const filteredContacts = this.getFilteredContacts();
     return (
       <div>
         <div>
@@ -46,12 +53,24 @@ export class App extends Component {
                 number: values.number,
               };
 
+              const isDublicate = this.state.contacts.some(
+                contact =>
+                  contact.name.toLowerCase() === values.name.toLowerCase()
+              );
+
+              if (isDublicate) {
+                alert(
+                  'This name already exists. Please enter a different name.'
+                );
+                return;
+              }
+
               this.setState(prevState => ({
                 contacts: [...prevState.contacts, newContact],
               }));
 
-              values.name = "";
-              values.number = ""
+              values.name = '';
+              values.number = '';
             }}
           >
             <Form>
@@ -77,6 +96,7 @@ export class App extends Component {
           </Formik>
         </div>
         <ContactList
+          onDelete={this.deleteContact}
           contacts={this.state.contacts}
           value={filter}
           filteredContacts={filteredContacts}

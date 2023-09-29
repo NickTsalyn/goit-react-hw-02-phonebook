@@ -1,4 +1,6 @@
-export const ContactList = ({ filterchange, filter, filteredContacts }) => {
+import { ContactListItem } from '../ContactListItem/ContactListItem';
+
+export const ContactList = ({ filterchange, filter, filteredContacts, onDelete}) => {
   return (
     <div>
       <h2>Contacts</h2>
@@ -6,10 +8,7 @@ export const ContactList = ({ filterchange, filter, filteredContacts }) => {
       <input type="text" name="Filter" value={filter} onChange={filterchange} />
       <ul>
         {filteredContacts.map(contact => (
-          <li key={contact.id}>
-            {contact.name}: {contact.number}
-            <button>Delete</button>
-          </li>
+          <ContactListItem key={contact.id} contact={contact} onDelete={onDelete}/>
         ))}
       </ul>
     </div>
