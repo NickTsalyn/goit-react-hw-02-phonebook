@@ -20,7 +20,7 @@ const FormValidSchema = Yup.object().shape({
     .required('Required'),
 });
 
-export const ContactForm = ({ contacts, addContact }) => {
+export const ContactForm = ({ addContact }) => {
   return (
     <Formik
       initialValues={{
@@ -29,15 +29,6 @@ export const ContactForm = ({ contacts, addContact }) => {
       }}
       validationSchema={FormValidSchema}
       onSubmit={values => {
-        const isDublicate = contacts.some(
-          contact => contact.name.toLowerCase() === values.name.toLowerCase()
-        );
-
-        if (isDublicate) {
-          alert('This name already exists. Please enter a different name.');
-          return;
-        }
-
         addContact(values);
 
         values.name = '';

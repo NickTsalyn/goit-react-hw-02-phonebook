@@ -34,11 +34,20 @@ export class App extends Component {
     );
   };
 
-  addContact = (values) => {
+  addContact = ({name, number}) => {
+    const {contacts} =this.state
+    const isDublicate = contacts.some(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (isDublicate) {
+      alert('This name already exists. Please enter a different name.');
+      return;
+    }
     const newContact = {
       id: nanoid(),
-      name: values.name,
-      number: values.number,
+      name,
+      number
   }
   this.setState(prevState => ({
     contacts: [...prevState.contacts, newContact],
@@ -51,7 +60,7 @@ export class App extends Component {
     return (
       <Layout>
         <h1>Phonebook</h1>
-        <ContactForm contacts={this.state.contacts} addContact={this.addContact}/>
+        <ContactForm addContact={this.addContact}/>
         <h2>Contacts</h2>
         <Filter value={filter} filterchange={this.filterchange} />
         <ContactList
